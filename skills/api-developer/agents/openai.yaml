@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "API Developer"
+  short_description: "Implement and test this project's FastAPI endpoints"
+  default_prompt: "Use $api-developer to implement this FastAPI endpoint and add pytest coverage."
