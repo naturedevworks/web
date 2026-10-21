@@ -60,7 +60,18 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=422,
         content=jsonable_encoder(
-            _envelope(422, "요청 값이 올바르지 않습니다.", exc.errors())
+            _envelope(
+                422,
+                "요청 값이 올바르지 않습니다.",
+                [
+                    {
+                        "loc": error["loc"],
+                        "msg": error["msg"],
+                        "type": error["type"],
+                    }
+                    for error in exc.errors()
+                ],
+            )
         ),
     )
 

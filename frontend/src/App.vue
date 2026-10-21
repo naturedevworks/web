@@ -2,7 +2,14 @@
 import * as PortOne from '@portone/browser-sdk/v2'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { API_BASE_URL } from './api/client'
-import { completeKakaoLogin as exchangeKakaoLogin, getCurrentUser, getKakaoLoginState, logoutUser } from './api/auth'
+import {
+  completeKakaoLogin as exchangeKakaoLogin,
+  getCurrentUser,
+  getKakaoLoginState,
+  loginWithEmail,
+  logoutUser,
+  registerEmailAccount,
+} from './api/auth'
 import { getCourse, listCourses } from './api/courses'
 import { confirmPayment, createCheckout, getEnrollment, listEnrollments } from './api/payments'
 import { resolveRoute } from './router'
@@ -356,8 +363,26 @@ async function logout() {
   }
 }
 
-function showEmailAuthNotice() {
-  authMessage.value = '이메일 계정 로그인과 가입은 아직 연결되지 않았습니다. 카카오로 계속해 주세요.'
+async function submitEmailAuth(credentials) {
+  authBusy.value = true
+  authMessage.value = ''
+  try {
+    const response = currentPage.value === 'signup'
+      ? await registerEmailAccount(credentials)
+      : await loginWithEmail(credentials)
+    const payload = await response.json()
+    if (!response.ok || payload.code !== 200) {
+      throw new Error(payload.message || (currentPage.value === 'signup' ? '회원가입에 실패했습니다.' : '로그인에 실패했습니다.'))
+    }
+    currentUser.value = payload.result
+    navigate('/courses')
+  } catch (error) {
+    authMessage.value = error instanceof TypeError
+      ? `서버(${API_BASE_URL})에 연결할 수 없습니다. 백엔드가 실행 중인지 확인해 주세요.`
+      : error.message || (currentPage.value === 'signup' ? '회원가입에 실패했습니다.' : '로그인에 실패했습니다.')
+  } finally {
+    authBusy.value = false
+  }
 }
 
 watch(route, loadCurrentRoute)
@@ -382,7 +407,7 @@ onUnmounted(() => window.removeEventListener('popstate', onPopState))
     <CourseDetailView :course="course" :loading="loading" :error="loadError" :payment-busy="paymentBusy" :is-enrolled="isEnrolled" :current-user="currentUser" :saved-course-ids="savedCourseIds" @navigate="navigate" @purchase="purchaseCourse" @retry="loadCurrentRoute" @logout="logout" @toggle-save="toggleSavedCourse" />
   </template>
   <template v-else-if="currentPage === 'login' || currentPage === 'signup' || currentPage === 'kakao-callback'">
-    <CourseAuthView :mode="currentPage" :busy="authBusy" :error="authMessage" :callback="currentPage === 'kakao-callback'" @navigate="navigate" @submit="showEmailAuthNotice" @social-login="startKakaoLogin" />
+    <CourseAuthView :mode="currentPage" :busy="authBusy" :error="authMessage" :callback="currentPage === 'kakao-callback'" @navigate="navigate" @submit="submitEmailAuth" @social-login="startKakaoLogin" />
   </template>
   <template v-else-if="currentPage === 'checkout'">
     <CheckoutView :course="course" :loading="loading" :payment-busy="paymentBusy" :message="paymentMessage" :current-user="currentUser" @navigate="navigate" @pay="startCheckoutPayment" @logout="logout" />

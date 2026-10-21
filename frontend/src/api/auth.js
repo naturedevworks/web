@@ -22,3 +22,21 @@ export function completeKakaoLogin(code, state) {
 export function logoutUser() {
   return apiRequest('/auth/logout', { method: 'POST', credentials: 'include' })
 }
+
+export function registerEmailAccount({ name, email, password }) {
+  return apiRequest('/auth/email/register', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  })
+}
+
+export function loginWithEmail({ email, password }) {
+  return apiRequest('/auth/email/login', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+}

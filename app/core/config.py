@@ -15,8 +15,9 @@ KAKAO_REDIRECT_URI = os.getenv(
     "KAKAO_REDIRECT_URI", "http://localhost:5173/auth/kakao/callback"
 )
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
+COOKIE_SAMESITE = "none" if COOKIE_SECURE else "lax"
 SESSION_DAYS = int(os.getenv("SESSION_DAYS", "30"))
-FRONTEND_ORIGINS = [
+_configured_frontend_origins = [
     origin.strip()
     for origin in os.getenv(
         "FRONTEND_ORIGINS",
@@ -24,6 +25,15 @@ FRONTEND_ORIGINS = [
     ).split(",")
     if origin.strip()
 ]
+FRONTEND_ORIGINS = list(
+    dict.fromkeys(
+        [
+            *_configured_frontend_origins,
+            "https://www.naturedevworks.kro.kr",
+            "https://100.100.100.101",
+        ]
+    )
+)
 
 # Public PortOne V2 identifiers are returned to the authenticated checkout
 # client. The API secret remains server-only and is never sent to the browser.
