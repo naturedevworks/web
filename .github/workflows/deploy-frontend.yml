@@ -24,7 +24,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, "${{ vars.DEPLOY_RUNNER_LABEL || 'deploy-network' }}"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
