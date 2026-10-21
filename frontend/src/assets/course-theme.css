@@ -1,0 +1,81 @@
+﻿:root {
+  --course-brand: #ffff00;
+  --course-brand-hover: #eded00;
+  --course-ink: #222222;
+  --course-muted: #717171;
+  --course-border: #e5e5e5;
+  --course-surface: #f5f6f7;
+  --course-focus: #111111;
+}
+
+.course-shell,
+.course-shell * {
+  box-sizing: border-box;
+}
+
+.course-shell {
+  color: var(--course-ink);
+}
+
+.course-shell a,
+.course-shell button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.course-shell button:not(:disabled) {
+  transition: transform 160ms ease, background-color 160ms ease, color 160ms ease,
+    border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.course-shell button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.course-shell button:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+.course-shell a:not(.course-shell__brand) {
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.course-shell a:focus-visible,
+.course-shell button:focus-visible,
+.course-shell input:focus-visible {
+  outline: 3px solid var(--course-focus);
+  outline-offset: 3px;
+}
+
+::view-transition-old(root) {
+  animation: course-view-out 140ms ease both;
+}
+
+::view-transition-new(root) {
+  animation: course-view-in 180ms ease both;
+}
+
+@keyframes course-view-out {
+  to { opacity: 0; }
+}
+
+@keyframes course-view-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-shell button:not(:disabled),
+  .course-shell a:not(.course-shell__brand),
+  .course-card,
+  .course-card__image,
+  .course-card__save,
+  .course-catalog__welcome>a,
+  .course-catalog__promo {
+    transition-duration: 0.01ms;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms;
+  }
+}
