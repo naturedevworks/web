@@ -3,7 +3,7 @@
 ## Current browser observations
 
 - `/courses` renders the catalog, course filters, search field, and cards. Selecting a card opens its detail route; the detail page's back link returns to the catalog.
-- `/signup` and `/login` render their forms. Submitting the email form displays a notice that email account creation and login are not connected yet. Kakao OAuth is the available account flow.
+- `/signup` submits the name, email, and password to the backend and signs the account in when registration succeeds. `/login` authenticates an existing email account. Kakao OAuth remains available as another sign-in option.
 - Opening checkout or selecting a paid course while signed out redirects to `/login`.
 - The 100 KRW PortOne test course is catalog data for payment integration checks.
 

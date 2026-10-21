@@ -34,6 +34,43 @@ def get_or_create_kakao_user(
     return {"id": user_id, "nickname": nickname}
 
 
+def create_email_user(
+    connection: sqlite3.Connection,
+    email: str,
+    display_name: str,
+    password_hash: str,
+) -> dict[str, Any]:
+    with connection:
+        cursor = connection.execute(
+            "INSERT INTO users (display_name) VALUES (?)", (display_name,)
+        )
+        user_id = cursor.lastrowid
+        connection.execute(
+            """INSERT INTO email_accounts (user_id, email, password_hash)
+               VALUES (?, ?, ?)""",
+            (user_id, email, password_hash),
+        )
+    return {"id": user_id, "nickname": display_name}
+
+
+def get_email_user(
+    connection: sqlite3.Connection, email: str
+) -> dict[str, Any] | None:
+    row = connection.execute(
+        """SELECT users.id, users.display_name, email_accounts.password_hash
+           FROM email_accounts JOIN users ON users.id = email_accounts.user_id
+           WHERE email_accounts.email = ?""",
+        (email,),
+    ).fetchone()
+    if not row:
+        return None
+    return {
+        "id": row["id"],
+        "nickname": row["display_name"],
+        "password_hash": row["password_hash"],
+    }
+
+
 def get_user_by_session(
     connection: sqlite3.Connection, token_hash: str
 ) -> dict[str, Any] | None:

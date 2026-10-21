@@ -26,9 +26,9 @@ function submit() {
       <p>{{ isSignup ? '계정을 만들고 새로운 배움을 시작하세요.' : '계속하려면 계정에 로그인하세요.' }}</p>
     </div>
     <form class="account-form" @submit.prevent="submit">
-      <label v-if="isSignup">이름<input v-model="name" name="name" autocomplete="name" required placeholder="이름 입력" /></label>
+      <label v-if="isSignup">이름<input v-model="name" name="name" autocomplete="name" required maxlength="100" placeholder="이름 입력" /></label>
       <label>이메일<input v-model="email" name="email" type="email" autocomplete="email" required placeholder="name@example.com" /></label>
-      <label>비밀번호<input v-model="password" name="password" type="password" :autocomplete="isSignup ? 'new-password' : 'current-password'" required minlength="8" placeholder="8자 이상 입력" /></label>
+      <label>비밀번호<input v-model="password" name="password" type="password" :autocomplete="isSignup ? 'new-password' : 'current-password'" required minlength="8" maxlength="128" placeholder="8자 이상 입력" /></label>
       <p v-if="error" class="account-form__error" role="alert">{{ error }}</p>
       <button class="account-form__submit" type="submit" :disabled="busy">{{ busy ? '처리 중…' : isSignup ? '계정 만들기' : '로그인' }}</button>
     </form>
